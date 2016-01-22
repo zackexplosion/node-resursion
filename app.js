@@ -3,159 +3,115 @@ var prettyjson = require('prettyjson');
 var Benchmark = require('benchmark');
 var suite = new Benchmark.Suite;
 var root = [
-	{
-		id: 1,
-		children: [
-			{
-				id: 5,
-				children: []
-			},
-			{
-				id: 6,
-				children: [
-					{
-						id: 7,
-						children: []
-					},
-					{
-						id: 88,
-						children: []
-					},
-					{
-						id: 99,
-						children: []
-					}
-				]
-			}
-		]
-	},
-	{
-		id: 2,
-		children: [
-			{
-				id: 3,
-				children: []
-			},
-			{
-				id: 4,
-				children: [
-					{
-						id: 8,
-						children: [
-							{
-								id: 11,
-								children: []
-							},
-							{
-								id: 12,
-								children: []
-							},
-						]
-					}
-				],
-			}
-		]
-	}
+  {
+    id: 1,
+    children: [
+      {
+        id: 5,
+        children: []
+      },
+      {
+        id: 6,
+        children: [
+          {
+            id: 7,
+            children: []
+          },
+          {
+            id: 88,
+            children: []
+          },
+          {
+            id: 99,
+            children: []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 2,
+    children: [
+      {
+        id: 3,
+        children: []
+      },
+      {
+        id: 4,
+        children: [
+          {
+            id: 8,
+            children: [
+              {
+                id: 11,
+                children: []
+              },
+              {
+                id: 12,
+                children: []
+              },
+            ]
+          }
+        ],
+      }
+    ]
+  }
 ];
 
-var find_tree_by_id = function(id){
-	var r;
-	var found = false;
-	var find_nodes = function(id, node, result){
-		var _node = {
-			id: node.id,
-			text: new Date().getTime()
-		}
-
-		// stop when the element is found
-		if(found){
-			return true;
-		}
-
-		result.push(_node);
-		if(node.id === id){
-			r = result;
-			found = true;
-			console.log('!!!! FOUND !!!!');
-			return true;
-		}
-
-		console.log('node.id', node.id);
-		console.log('node.children.length', node.children.length);
-
-		if(node.children.length === 0){
-			result.pop();
-			return false;
-		}
-
-
-		node.children.some(function(n){
-			return find_nodes(id, n, result);
-		});
-	}
-
-	// var result = [];
-	for(var i in root){
-		find_nodes(id, root[i], []);
-	}
-
-	return r;
-}
-
 function find_node_by_id (id){
-	var step = 0;
-	var found = false;
-	var result = {
-		element: null,
-		trace: []
-	};
-	function find_node(node, stack){
-		if(found){
-			return result;
-		}
-		stack.push({
-			id: node.id,
-			text: node.text
-		});
-		console.log('step', ++step, ', current id:', node.id);
-		console.log('stack', stack);
+  var step = 0;
+  var found = false;
+  var result = {
+    element: null,
+    trace: []
+  };
+  function find_node(node, stack){
+    if(found){
+      return result;
+    }
+    stack.push({
+      id: node.id,
+      text: node.text
+    });
+    console.log('step', ++step, ', current id:', node.id);
+    console.log('stack', stack);
 
-		if(node.id === id){
-			console.log('!!!!!!!!!!!!!!!');
-			console.log('found node', node);
-			console.log('!!!!!!!!!!!!!!!');
-			found = true;
-			result = {
-				element: node,
-				trace: stack
-			}
-			return true;
-		}else if(Array.isArray(node.children)){
+    if(node.id === id){
+      console.log('!!!!!!!!!!!!!!!');
+      console.log('found node', node);
+      console.log('!!!!!!!!!!!!!!!');
+      found = true;
+      result = {
+        element: node,
+        trace: stack
+      }
+      return true;
+    }else if(Array.isArray(node.children)){
 
-			if(node.children.length === 0){
-				stack.pop();
-				return false;
-			}
+      if(node.children.length === 0){
+        stack.pop();
+        return false;
+      }
 
-			console.log('  search child');
-			var resursion_result = false;
-			node.children.forEach(function(v){
-				let resursion_result = find_node(v, stack);
-				console.log('  recursion search', resursion_result);
-				// return r !== null;
-			});
+      console.log('  search child');
+      var resursion_result = false;
+      node.children.forEach(function(v){
+        let resursion_result = find_node(v, stack);
+        console.log('  recursion search', resursion_result);
+        // return r !== null;
+      });
 
-			return resursion_result;
-		}
+      return resursion_result;
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	for(let i in root){
-		find_node(root[i], []);
-	}
+  for(let i in root){
+    find_node(root[i], []);
+  }
 
-	return result;
+  return result;
 }
 
 
